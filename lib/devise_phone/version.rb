@@ -1,3 +1,3 @@
 module DevisePhone
-  VERSION = "0.0.161".freeze
+  VERSION = "0.0.164".freeze
 end
