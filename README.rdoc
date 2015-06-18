@@ -1,0 +1,73 @@
+= devise_sms_confirmation
+
+Devise Phone is a snap-in for Devise that will make any resource activable via SMS.
+The user will receive an SMS with a token that can be entered on the site to activate the account.
+Ask the user his phone (and phone confirmation to double check) on registration and the token will be sended automagically.
+
+== Installation for Rails >= 3.0 and Devise >= 1.1
+
+Install DevisePhone gem, it will also install dependencies (such as devise and warden):
+
+  gem install devise_phone
+
+Add DevisePhone to your Gemfile (and Devise and TwilioRuby if you weren't using them):
+
+  gem 'devise', 			'~> 3.4.1'
+  gem 'twilio-ruby', 	'~> 4.2.0'
+  gem 'devise_phone', '~> 0.0.1'
+
+=== Automatic installation
+
+Run the following generator to add DevisePhone’s configuration option in the Devise configuration file (config/initializers/devise.rb) and the sms sender class in your lib folder:
+
+  rails generate devise_phone:install
+
+When you are done, you are ready to add DevisePhone to any of your Devise models using the following generator:
+
+  rails generate devise_phone MODEL
+
+Replace MODEL by the class name you want to add DevisePhone, like User, Admin, etc. This will add the :phone flag to your model's Devise modules. The generator will also create a migration file (if your ORM support them). Continue reading this file to understand exactly what the generator produces and how to use it.
+
+== Configuring views
+
+All the views are packaged inside the gem. If you'd like to customize the views, invoke the following generator and it will copy all the views to your application:
+
+  rails generate devise_phone:views
+
+You can also use the generator to generate scoped views:
+
+  rails generate devise_phone:views users
+
+Please refer to {Devise's README}[http://github.com/plataformatec/devise] for more information about views.
+
+== Usage
+
+The model is specular to the Devise's own Confirmable model. It only requires the user to supply a valid phone number.
+
+On registration it will send an SMS with a token to be inserted to complete activation process.
+By default users MUST activate by SMS before entering.
+If you want something more "relaxed" just override <tt>sms_confirmation_required?</tt> in your model and make it your way.
+You can use the convenience filter <tt>require_sms_activated!</tt> in your controller to block sms-unactive users from specific pages.
+
+== Controller filter
+
+DevisePhone extends your controllers with a <tt>require_sms_activated!</tt> method. Use it to restrict part of the site to "confirmed users" only
+
+== I18n
+
+DevisePhone installs a localizable file in your config/locales folder.
+
+== Contributing to devise_phone
+
+* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
+* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
+* Fork the project
+* Start a feature/bugfix branch
+* Commit and push until you are happy with your contribution
+* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
+* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+
+== Copyright
+
+Copyright (c) 2015 Hubert Theodore. See LICENSE.txt for
+further details.
