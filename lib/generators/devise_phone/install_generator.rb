@@ -15,6 +15,9 @@ module DevisePhone
           
           if old_content.match(Regexp.new(/^\s# ==> Configuration for :phone\n/))
             false
+          end
+        end
+      end
 #           else
 #             inject_into_file(devise_initializer_path, :before => "  # ==> Configuration for :confirmable\n") do
 # <<-CONTENT
@@ -35,10 +38,10 @@ module DevisePhone
 #   # config.sms_sender = "Devise::SmsSender"
   
 # CONTENT
-            end
-          end
-        end
-      end
+      #       end
+      #     end
+      #   end
+      # end
       
       # def copy_locale
       #   copy_file "../../../config/locales/en.yml", "config/locales/devise_phone.en.yml"
