@@ -1,4 +1,4 @@
-module DeviseSmsPhone::Controllers::Helpers
+module DevisePhone::Controllers::Helpers
   protected
   
   # Convenience helper to check if user has confirmed the token (and the phone) or not.
@@ -9,4 +9,4 @@ module DeviseSmsPhone::Controllers::Helpers
     end
   end
 end
-ActionController::Base.send :include, DeviseSmsPhone::Controllers::Helpers
+ActionController::Base.send :include, DevisePhone::Controllers::Helpers
