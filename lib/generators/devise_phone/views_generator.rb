@@ -2,7 +2,7 @@ require 'generators/devise/views_generator'
 
 module DevisePhone
   module Generators
-    class ViewsGenerator
+    class ViewsGenerator < Devise::Generators::ViewsGenerator
       source_root File.expand_path("../../../../app/views/devise", __FILE__)
       desc 'Copies all DevisePhone views to your application.'
 
