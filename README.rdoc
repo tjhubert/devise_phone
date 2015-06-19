@@ -42,7 +42,7 @@ Please refer to {Devise's README}[http://github.com/plataformatec/devise] for mo
 == Usage
 
 Don't forget to add phone_number as one of the permitted parameters. This is an example of doing so:
-
+```
 	class ApplicationController < ActionController::Base
 	  # Prevent CSRF attacks by raising an exception.
 	  # For APIs, you may want to use :null_session instead.
@@ -64,12 +64,13 @@ Don't forget to add phone_number as one of the permitted parameters. This is an 
 	    end
 	  end
 	end
+```
 
 The resend verification code button can be inserted to any page just by using:
-	<%= render 'devise/phone/resend_code' %>
+		<%= render 'devise/phone/resend_code' %>
 
 The activate phone field and button can be inserted to any page just by using:
-	<%= render 'devise/phone/activate_phone' %>
+		<%= render 'devise/phone/activate_phone' %>
 
 
 == Contributing to devise_phone
