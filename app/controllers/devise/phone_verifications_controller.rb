@@ -23,12 +23,25 @@ class Devise::PhoneVerificationsController < DeviseController
   
   # GET /resource/phone_verification/insert
   def insert
+    # puts "current_user"
+    # puts current_user
+    # puts "current_user methods"
+    # puts current_user.methods
+    # puts "User.all.first"
+    # puts User.all.first
+    # puts "the same?"
+    # puts User.all.first == current_user
+
+    # User.all.first.generate_verification_code_and_send_sms
+    # puts current_user.methods
     current_user.generate_verification_code_and_send_sms
     # build_resource({})
   end
   
   # GET or POST /resource/phone_verification/consume?sms_token=abcdef
   def consume
+    
+    # puts current_user.phone_number
     current_user.verify_phone_number_with_code_entered(params[:code_entered])
 
     # self.resource = resource_class.verify_phone_number_with_code_entered(params[:code_entered])
