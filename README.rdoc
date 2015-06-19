@@ -1,28 +1,27 @@
-= devise_sms_confirmation
+= devise_phone
 
-Devise Phone is a snap-in for Devise that will make any resource activable via SMS.
-The user will receive an SMS with a token that can be entered on the site to activate the account.
-Ask the user his phone (and phone confirmation to double check) on registration and the token will be sended automagically.
-
-== Installation for Rails >= 3.0 and Devise >= 1.1
-
-Install DevisePhone gem, it will also install dependencies (such as devise and warden):
-
-  gem install devise_phone
+The user will receive an SMS with a token that can be entered on the site to activate the phone number.
+Ask the user his phone and the token will be sended automagically.
 
 Add DevisePhone to your Gemfile (and Devise and TwilioRuby if you weren't using them):
 
-  gem 'devise', 			'~> 3.4.1'
-  gem 'twilio-ruby', 	'~> 4.2.0'
-  gem 'devise_phone', '~> 0.0.1'
+  gem 'devise'
+  gem 'twilio-ruby'
+  gem 'devise_phone'
 
 === Automatic installation
+
+Run: 
+	rails generate devise:install
+	rails generate devise MODEL
+	rails generate devise:views MODEL
+before installing devise_phone in your Rails app
 
 Run the following generator to add DevisePhone’s configuration option in the Devise configuration file (config/initializers/devise.rb) and the sms sender class in your lib folder:
 
   rails generate devise_phone:install
 
-When you are done, you are ready to add DevisePhone to any of your Devise models using the following generator:
+When you are done, you are ready to add DevisePhone to any of your Devise models using the following generator: 
 
   rails generate devise_phone MODEL
 
@@ -34,7 +33,7 @@ All the views are packaged inside the gem. If you'd like to customize the views,
 
   rails generate devise_phone:views
 
-You can also use the generator to generate scoped views:
+You can also use the generator to generate scoped views: (This might not work yet)
 
   rails generate devise_phone:views users
 
@@ -42,30 +41,40 @@ Please refer to {Devise's README}[http://github.com/plataformatec/devise] for mo
 
 == Usage
 
-The model is specular to the Devise's own Confirmable model. It only requires the user to supply a valid phone number.
+Don't forget to add phone_number as one of the permitted parameters. This is an example of doing so:
 
-On registration it will send an SMS with a token to be inserted to complete activation process.
-By default users MUST activate by SMS before entering.
-If you want something more "relaxed" just override <tt>sms_confirmation_required?</tt> in your model and make it your way.
-You can use the convenience filter <tt>require_sms_activated!</tt> in your controller to block sms-unactive users from specific pages.
+	class ApplicationController < ActionController::Base
+	  # Prevent CSRF attacks by raising an exception.
+	  # For APIs, you may want to use :null_session instead.
+	  protect_from_forgery with: :exception
 
-== Controller filter
+	  before_filter :configure_permitted_parameters
 
-DevisePhone extends your controllers with a <tt>require_sms_activated!</tt> method. Use it to restrict part of the site to "confirmed users" only
+	  protected
 
-== I18n
+	  # my custom fields are :name, :heard_how
+	  def configure_permitted_parameters
+	    devise_parameter_sanitizer.for(:sign_up) do |u|
+	      u.permit(:phone_number,
+	        :email, :password, :password_confirmation)
+	    end
+	    devise_parameter_sanitizer.for(:account_update) do |u|
+	      u.permit(:phone_number,
+	        :email, :password, :password_confirmation, :current_password)
+	    end
+	  end
+	end
 
-DevisePhone installs a localizable file in your config/locales folder.
+The resend verification code button can be inserted to any page just by using:
+	<%= render 'devise/phone/resend_code' %>
+
+The activate phone field and button can be inserted to any page just by using:
+	<%= render 'devise/phone/activate_phone' %>
+
 
 == Contributing to devise_phone
 
-* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
-* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
-* Fork the project
-* Start a feature/bugfix branch
-* Commit and push until you are happy with your contribution
-* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+* email htheodore@gmail.com
 
 == Copyright
 
