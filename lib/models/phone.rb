@@ -30,8 +30,8 @@ module Devise
       extend ActiveSupport::Concern
 
       included do
-        before_create :set_phone_attributes, :if => :phone_verification_needed?
-        after_create  :generate_verification_code_and_send_sms, :if => :phone_verification_needed?
+        before_save :set_phone_attributes, :if => :phone_verification_needed?
+        after_save  :generate_verification_code_and_send_sms, :if => :phone_verification_needed?
       end
 
       # # Confirm a user by setting it's sms_confirmed_at to actual time. If the user
@@ -53,7 +53,7 @@ module Devise
       def generate_verification_code_and_send_sms
         if(self.phone_number?)
           self.phone_verification_code = generate_phone_verification_code
-          ::Devise.sms_sender.send_sms_verification_code_to(self)
+          send_sms_verification_code
         else
           # self.errors.add(:sms_confirmation_token, :no_phone_associated)
           false
@@ -152,6 +152,23 @@ module Devise
         #   generate_sms_token && save(:validate => false)
         # end
 
+        def send_sms_verification_code
+            number_to_send_to = self.phone_number
+            verification_code = self.phone_verification_code
+
+            twilio_sid = "ACd35391c08cde7926e2295d1812ada918"
+            twilio_token = "44d79a36adb3d54cc15711d94d149119"
+            twilio_phone_number = "6502810746"
+
+            @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
+         
+            @twilio_client.account.sms.messages.create(
+              :from => "+1#{twilio_phone_number}",
+              :to => number_to_send_to,
+              :body => "Hi! This is MathCrunch. Your verification code is #{verification_code}"
+            )
+        end
+
         module ClassMethods
           # # Attempt to find a user by it's email. If a record is found, send a new
           # # sms token instructions to it. If not user is found, returns a new user
@@ -186,12 +203,14 @@ module Devise
             end
           end
 
-          def send_verification_code
+          def set_default_phone_attributes_and_send_verification_code
             self.set_phone_attributes
             if self.save!
-              send_sms_for_phone_verification
+              send_sms_for_verification_code
             end
           end
+
+          
 
           # # Generates a small token that can be used conveniently on SMS's.
           # # The token is 5 chars long and uppercased.

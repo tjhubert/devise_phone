@@ -9,7 +9,7 @@ class Devise::PhoneVerificationsController < DeviseController
   # POST /resource/phone_verification
   def create
 
-    self.send_verification_code
+    self.set_default_phone_attributes_and_send_verification_code
 
     # self.resource = resource_class.send_verification_code
     

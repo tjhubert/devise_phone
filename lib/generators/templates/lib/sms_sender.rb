@@ -1,4 +1,4 @@
-	class Devise::SmsSender
+class Devise::SmsSender
   #Actually sends the sms token. feel free to modify and adapt to your provider and/or gem
   def send_sms_verification_code_to(user)
     number_to_send_to = user.phone_number
