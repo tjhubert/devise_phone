@@ -10,6 +10,17 @@ require 'devise_phone/controllers/helpers'
 require 'devise_phone/rails'
 
 module Devise
+
+  # Get the phone class from the phone reference object.
+  def self.phone
+    @@phone_ref.get
+  end
+
+  # Set the phone reference object to access the phone.
+  def self.phone=(class_name)
+    @@phone_ref = ref(class_name)
+  end
+  self.phone = "Devise::Phone"
   # mattr_accessor :sms_confirm_within
   # @@sms_confirm_within = 2.days
   # mattr_accessor :sms_confirmation_keys
@@ -36,14 +47,14 @@ module Devise
   #     ActiveSupport::Dependencies.ref(arg)
   #   end
   # end
-  # # Get the sms sender class from the mailer reference object.
+  # # Get the sms sender class from the phone reference object.
   # def self.sms_sender
   #   @@sms_sender_ref.get
   # end
 
   # # Set the smser reference object to access the smser.
   # def self.sms_sender=(class_name)
-  #   @@mailer_ref = ref(class_name)
+  #   @@phone_ref = ref(class_name)
   # end
   
   # @@sms_sender = "Devise::SmsSender"

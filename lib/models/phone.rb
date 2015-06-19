@@ -34,6 +34,8 @@ module Devise
         after_create  :generate_verification_code_and_send_sms, :if => :phone_verification_needed?
       end
 
+
+
       # # Confirm a user by setting it's sms_confirmed_at to actual time. If the user
       # # is already confirmed, add en error to email field
       # def confirm_sms!
@@ -51,7 +53,9 @@ module Devise
 
       # Send confirmation token by sms
       def generate_verification_code_and_send_sms
+        puts "in the public method"
         if(self.phone_number?)
+          puts "generating code"
           update!(phone_verification_code: generate_phone_verification_code)
           send_sms_verification_code
         else
@@ -98,6 +102,13 @@ module Devise
 
       private
 
+        def mark_phone_as_verified!
+          update!(phone_number_verified: true,
+                 phone_verification_code: nil,
+                 phone_verification_code_sent_at: nil,
+                 phone_verified_at: DateTime.now)
+        end
+
         # Callback to overwrite if an sms confirmation is required or not.
         def phone_verification_needed?
           phone_number.present? && !phone_number_verified
@@ -120,6 +131,8 @@ module Devise
         end
 
         def send_sms_verification_code
+            puts "in the private method"
+
             number_to_send_to = self.phone_number
             verification_code = self.phone_verification_code
 
@@ -136,7 +149,33 @@ module Devise
             )
         end
 
-        # module ClassMethods
+      module ClassMethods
+
+        def generate_verification_code_and_send_sms
+          puts "in the public method"
+          if(self.phone_number?)
+            puts "generating code"
+            update!(phone_verification_code: generate_phone_verification_code)
+            send_sms_verification_code
+          else
+            self.errors.add(:phone_verification_code, :no_phone_associated)
+            false
+          end
+        end
+
+        def verify_phone_number_with_code_entered(code_entered)
+          if (code_entered == self.phone_verification_code)
+            mark_phone_as_verified!
+            true
+          else
+            self.errors.add(:phone_verification_code, :wrong_code_entered)
+            false
+          end
+        end
+        
+      end
+
+      
 
         #   def mark_phone_as_verified!
         #     update!(phone_number_verified: true,
