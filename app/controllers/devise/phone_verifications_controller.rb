@@ -9,7 +9,7 @@ class Devise::PhoneVerificationsController < DeviseController
   # POST /resource/phone_verification
   def create
 
-    self.set_default_phone_attributes_and_send_verification_code
+    # self.set_default_phone_attributes_and_send_verification_code
 
     # self.resource = resource_class.send_verification_code
     
@@ -23,7 +23,8 @@ class Devise::PhoneVerificationsController < DeviseController
   
   # GET /resource/phone_verification/insert
   def insert
-    build_resource({})
+    self.generate_verification_code_and_send_sms
+    # build_resource({})
   end
   
   # GET or POST /resource/phone_verification/consume?sms_token=abcdef

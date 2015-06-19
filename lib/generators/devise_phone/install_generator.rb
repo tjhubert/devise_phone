@@ -47,9 +47,9 @@ module DevisePhone
       #   copy_file "../../../config/locales/en.yml", "config/locales/devise_phone.en.yml"
       # end
       
-      def copy_default_smser
-        copy_file "lib/sms_sender.rb", "lib/devise_sms_sender.rb"
-      end
+      # def copy_default_smser
+      #   copy_file "lib/sms_sender.rb", "lib/devise_sms_sender.rb"
+      # end
     end
   end
 end

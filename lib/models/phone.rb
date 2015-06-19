@@ -30,8 +30,8 @@ module Devise
       extend ActiveSupport::Concern
 
       included do
-        before_save :set_phone_attributes, :if => :phone_verification_needed?
-        after_save  :generate_verification_code_and_send_sms, :if => :phone_verification_needed?
+        before_create :set_unverified_phone_attributes, :if => :phone_verification_needed?
+        after_create  :generate_verification_code_and_send_sms, :if => :phone_verification_needed?
       end
 
       # # Confirm a user by setting it's sms_confirmed_at to actual time. If the user
@@ -52,13 +52,24 @@ module Devise
       # Send confirmation token by sms
       def generate_verification_code_and_send_sms
         if(self.phone_number?)
-          self.phone_verification_code = generate_phone_verification_code
+          update!(phone_verification_code: generate_phone_verification_code)
           send_sms_verification_code
         else
-          # self.errors.add(:sms_confirmation_token, :no_phone_associated)
+          self.errors.add(:phone_verification_code, :no_phone_associated)
           false
         end
       end
+
+      def verify_phone_number_with_code_entered(code_entered)
+        if (code_entered == self.phone_verification_code)
+          mark_phone_as_verified!
+          true
+        else
+          self.errors.add(:phone_verification_code, :wrong_code_entered)
+          false
+        end
+      end
+
 
       # # Resend sms confirmation token. This method does not need to generate a new token.
       # def resend_sms_token
@@ -85,54 +96,16 @@ module Devise
       #   self.sms_confirmed_at = Time.now
       # end
 
-      protected
+      private
 
         # Callback to overwrite if an sms confirmation is required or not.
         def phone_verification_needed?
           phone_number.present? && !phone_number_verified
         end
 
-        # def sms_confirmation_required?
-        #   !confirmed_sms?
-        # end
-
-        # Checks if the confirmation for the user is within the limit time.
-        # We do this by calculating if the difference between today and the
-        # confirmation sent date does not exceed the confirm in time configured.
-        # Confirm_in is a model configuration, must always be an integer value.
-        #
-        # Example:
-        #
-        #   # sms_confirm_within = 1.day and sms_confirmation_sent_at = today
-        #   confirmation_period_valid?   # returns true
-        #
-        #   # sms_confirm_within = 5.days and sms_confirmation_sent_at = 4.days.ago
-        #   confirmation_period_valid?   # returns true
-        #
-        #   # sms_confirm_within = 5.days and sms_confirmation_sent_at = 5.days.ago
-        #   confirmation_period_valid?   # returns false
-        #
-        #   # sms_confirm_within = 0.days
-        #   confirmation_period_valid?   # will always return false
-        #
-        # def confirmation_sms_period_valid?
-        #   sms_confirmation_sent_at && sms_confirmation_sent_at.utc >= self.class.sms_confirm_within.ago
-        # end
-
-        # # Checks whether the record is confirmed or not, yielding to the block
-        # # if it's already confirmed, otherwise adds an error to email.
-        # def unless_sms_confirmed
-        #   unless confirmed_sms?
-        #     yield
-        #   else
-        #     self.errors.add(:sms_confirmation_token, :sms_already_confirmed)
-        #     false
-        #   end
-        # end
-
         # Generates a new random token for confirmation, and stores the time
         # this token is being generated
-        def set_phone_attributes
+        def set_unverified_phone_attributes
 
           self.phone_number_verified = false
           self.phone_verification_code_sent_at = DateTime.now
@@ -142,15 +115,9 @@ module Devise
         end
 
         def generate_phone_verification_code
-          # begin
           verification_code = SecureRandom.hex(3)
-          # end while self.class.exists?(phone_verification_code: verification_code)
           verification_code
         end
-
-        # def generate_sms_token!
-        #   generate_sms_token && save(:validate => false)
-        # end
 
         def send_sms_verification_code
             number_to_send_to = self.phone_number
@@ -169,66 +136,29 @@ module Devise
             )
         end
 
-        module ClassMethods
-          # # Attempt to find a user by it's email. If a record is found, send a new
-          # # sms token instructions to it. If not user is found, returns a new user
-          # # with an email not found error.
-          # # Options must contain the user email
-          # def send_sms_token(attributes={})
-          #   sms_confirmable = find_or_initialize_with_errors(sms_confirmation_keys, attributes, :not_found)
-          #   sms_confirmable.resend_sms_token if sms_confirmable.persisted?
-          #   sms_confirmable
-          # end
+        # module ClassMethods
 
-          # # Find a user by it's sms confirmation token and try to confirm it.
-          # # If no user is found, returns a new user with an error.
-          # # If the user is already confirmed, create an error for the user
-          # # Options must have the sms_confirmation_token
-          # def confirm_by_sms_token(sms_confirmation_token)
-          #   sms_confirmable = find_or_initialize_with_error_by(:sms_confirmation_token, sms_confirmation_token)
-          #   sms_confirmable.confirm_sms! if sms_confirmable.persisted?
-          #   sms_confirmable
-          # end
+        #   def mark_phone_as_verified!
+        #     update!(phone_number_verified: true,
+        #            phone_verification_code: nil,
+        #            phone_verification_code_sent_at: nil,
+        #            phone_verified_at: DateTime.now)
+        #   end 
 
-          def mark_phone_as_verified!
-            update!(phone_number_verified: true,
-                   phone_verification_code: nil,
-                   phone_verification_code_sent_at: nil,
-                   phone_verified_at: DateTime.now)
-          end 
+        #   def verify_phone_number_with_code_entered(code_entered)
+        #     if self.phone_verification_code == code_entered
+        #       mark_phone_as_verified!
+        #     end
+        #   end
 
-          def verify_phone_number_with_code_entered(code_entered)
-            if self.phone_verification_code == code_entered
-              mark_phone_as_verified!
-            end
-          end
+        #   def set_unverified_phone_attributes_and_send_verification_code
+        #     self.set_verified_phone_attributes
+        #     if self.save!
+        #       send_sms_for_verification_code
+        #     end
+        #   end
 
-          def set_default_phone_attributes_and_send_verification_code
-            self.set_phone_attributes
-            if self.save!
-              send_sms_for_verification_code
-            end
-          end
-
-          
-
-          # # Generates a small token that can be used conveniently on SMS's.
-          # # The token is 5 chars long and uppercased.
-
-          # def generate_small_token(column)
-          #   loop do
-          #     token = Devise.friendly_token[0,5].upcase
-          #     break token unless to_adapter.find_first({ column => token })
-          #   end
-          # end
-
-          # # Generate an sms token checking if one does not already exist in the database.
-          # def sms_confirmation_token
-          #   generate_small_token(:sms_confirmation_token)
-          # end
-
-          # Devise::Models.config(self, :sms_confirm_within, :sms_confirmation_keys)
-        end
+        # end
     end
   end
 end
