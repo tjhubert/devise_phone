@@ -16,40 +16,11 @@ module DevisePhone
           if old_content.match(Regexp.new(/^\s# ==> Configuration for :phone\n/))
             false
           end
-        end
-      end
-#           else
-#             inject_into_file(devise_initializer_path, :before => "  # ==> Configuration for :confirmable\n") do
-# <<-CONTENT
-#   # ==> Configuration for :phone
-#   # The period the generated sms token is valid, after
-#   # this period, the user won't be able to activate.
-#   # config.sms_confirm_within = 0.days
 
-#   # The keys searched for confirmation values.
-#   # config.sms_confirmation_keys = [:email]
-  
-#   # Your SmsSender class. The provided one uses 
-#   # moonshado-sms gem so install it and configure
-#   # if you want to use it.
-#   # A simple instance of the class has been copied in your lib folder
-#   # For further informations on using and configuring moonshado-sms gem check
-#   # https://github.com/moonshado/moonshado-sms
-#   # config.sms_sender = "Devise::SmsSender"
-  
-# CONTENT
-      #       end
-      #     end
-      #   end
-      # end
+        end
+
+      end
       
-      # def copy_locale
-      #   copy_file "../../../config/locales/en.yml", "config/locales/devise_phone.en.yml"
-      # end
-      
-      # def copy_default_smser
-      #   copy_file "lib/sms_sender.rb", "lib/devise_sms_sender.rb"
-      # end
     end
   end
 end

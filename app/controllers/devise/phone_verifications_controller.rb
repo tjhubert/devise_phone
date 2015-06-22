@@ -8,51 +8,21 @@ class Devise::PhoneVerificationsController < DeviseController
 
   # POST /resource/phone_verification
   def create
-
-    # self.set_default_phone_attributes_and_send_verification_code
-
-    # self.resource = resource_class.send_verification_code
-    
-    # if resource.errors.empty?
-    #   set_flash_message :notice, :send_token, :phone => self.resource.phone
-    #   redirect_to new_session_path(resource_name)
-    # else
-    #   render :new
-    # end
   end
   
   # GET /resource/phone_verification/insert
   def insert
-    # puts "current_user"
-    # puts current_user
-    # puts "current_user methods"
-    # puts current_user.methods
-    # puts "User.all.first"
-    # puts User.all.first
-    # puts "the same?"
-    # puts User.all.first == current_user
-
-    # User.all.first.generate_verification_code_and_send_sms
-    # puts current_user.methods
     current_user.generate_verification_code_and_send_sms
-    # build_resource({})
+    puts "hey"
+    render nothing: true
   end
   
   # GET or POST /resource/phone_verification/consume?sms_token=abcdef
   def consume
-    
-    # puts current_user.phone_number
     current_user.verify_phone_number_with_code_entered(params[:code_entered])
+    puts "hey2"
 
-    # self.resource = resource_class.verify_phone_number_with_code_entered(params[:code_entered])
-
-    # if resource.errors.empty?
-    #   set_flash_message :notice, :confirmed
-    #   sign_in_and_redirect(resource_name, resource)
-    # else
-    #   render :new
-    # end
-
+    render nothing: true
   end
   
   protected
