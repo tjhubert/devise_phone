@@ -98,7 +98,7 @@ module Devise
             twilio_sid = Rails.application.config.twilio[:sid]
             twilio_token = Rails.application.config.twilio[:token]
             twilio_phone_number = Rails.application.config.twilio[:phone_number]
-            twilio_message_body = Rails.application.config.twilio[:message_body]
+            twilio_message_body = I18n.t("devise.phone.message_body", :verification_code => verification_code)
 
             @twilio_client = Twilio::REST::Client.new twilio_sid, twilio_token
          

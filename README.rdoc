@@ -27,14 +27,20 @@ When you are done, you are ready to add DevisePhone to any of your Devise models
 
 Replace MODEL by the class name you want to add DevisePhone, like User, Admin, etc. This will add the :phone flag to your model's Devise modules. The generator will also create a migration file (if your ORM support them). Continue reading this file to understand exactly what the generator produces and how to use it.
 
-In your config/environments, please specify your twilio_sid, twilio_token, and twilio_phone_number, and twilio_message_body (use #{verification_code} to include the phone verification code of the user) :
+In your config/environments, please specify your twilio_sid, twilio_token, and twilio_phone_number:
 
-	dconfig.twilio = {
+	config.twilio = {
     sid:          'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
     token:        'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
     phone_number: '123455678',
-    message_body: "Hi! This is from company u asked for. Your verification code is #{verification_code}"
   }
+
+To specify the message body, in devise.en.yml add:
+
+en:
+	devise:
+		phone:
+		      message_body: "Hi! This is Company Name. Your verification code is %{verification_code}."
 
 == Configuring views
 
