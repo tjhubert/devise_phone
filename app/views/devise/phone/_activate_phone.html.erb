@@ -1,4 +1,4 @@
-<%= form_for(resource, :as => resource_name, :url => consume_user_phone_verification_path(resource_name), :html => { :method => :post }, remote: true) do |f| %>
+<%= form_for(resource, :as => resource_name, :url => verify_code_user_phone_verification_path(resource_name), :html => { :method => :post }, remote: true) do |f| %>
   
   <p><%=label_tag :code_entered %><br />
   <%=text_field_tag :code_entered, "" %></p>
